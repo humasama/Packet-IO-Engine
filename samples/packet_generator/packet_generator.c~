@@ -280,45 +280,16 @@ void build_packet(char *buf, int size, uint64_t *seed)
 	ip->frag_off = 0;
 	ip->ttl = 32;
 	ip->protocol = IPPROTO_UDP;
-	/*	
 	ip->saddr = HTONL(0x0A000001);
 	ip->daddr = HTONL(myrand(seed));
-	*/
-	///////double directions pkt ip////////
-	uint32_t d1 = 0x0A000000 + my_cpu/2;
-	uint32_t d2 = 0x0B000000 + my_cpu/2;
-	if(my_cpu%2==0){
-		ip->saddr=HTONL( d1 );
-		ip->daddr=HTONL( d2 );
-	}
-	else{
-		ip->saddr=HTONL( d2 );
-		ip->daddr=HTONL( d1 );								
-	}	
-	//////////////////////////////////////
-
 	ip->check = 0;
 	ip->check = ip_fast_csum(ip, ip->ihl);
 
 	udp = (struct udphdr *)((char *)ip + sizeof(*ip));
 
-	/*
 	rand_val = myrand(seed);
 	udp->source = HTONS(rand_val & 0xFFFF);
 	udp->dest = HTONS((rand_val >> 16) & 0xFFFF);
-	*/
-	//////////double directions pkt port///////
-	int p1 = my_cpu/2 + 12345;
-	int p2 = my_cpu/2 + 23456;
-	if(my_cpu%2==0){
-		udp->source = HTONS( p1 & 0xFFFF );
-		udp->dest = HTONS( p2 & 0xFFFF );
-	}
-	else{
-		udp->source = HTONS( p2 & 0xFFFF );
-		udp->dest = HTONS( p1 & 0xFFFF );
-	}
-	//////////////////////////////////////////
 
 	udp->len = HTONS(size - sizeof(*eth) - sizeof(*ip));
 	udp->check = 0;
